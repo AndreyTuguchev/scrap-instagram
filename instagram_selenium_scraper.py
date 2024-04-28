@@ -443,6 +443,8 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 					current_instagram_account = 'instagram_account_not_defiend'
 
 				description = soup__WebUrl.select('meta[property="og:title"]')
+
+				custom_caption_data = ""
 				if len(description) > 0:
 					description_data = description[0]['content'].replace("on Instagram :", "on Instagram:")
 					if 'on Instagram:' in description_data:
@@ -451,9 +453,7 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 					
 					if len(custom_caption_data) >= 900:
 						custom_caption_data = ""
-				else:
-					custom_caption_data = ""
-
+						
 				video_items_arr = soup__WebUrl.select('main video')
 
 				for video_item in video_items_arr:
