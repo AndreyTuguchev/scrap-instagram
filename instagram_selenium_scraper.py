@@ -21,8 +21,6 @@ from bs4 import BeautifulSoup
 
 import pytz
 
-
-
 # make sure that we run only one instance of this script at any given time. This is needed because we will have CRON task so we can rerun the script after reboot or manual termination
 from tendo import singleton
 me = singleton.SingleInstance()
@@ -476,6 +474,11 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 
 	#--------------------------
 
+	username_input_css = 'form input[aria-label*="username"]'
+	if [] != BeautifulSoup( driver.page_source, "lxml" ).select( username_input_css ):
+		telegram_send_selenium_screenshot( driver )
+		telegram_send_text_func( "⚠️⚠️.\n Login form found! re-login into this Chrome profile \n\n." )
+		
 	telegram_send_text_func( ".\n\n\n\n\n\n\n\n\n\n\n\n." )
 
 	time.sleep( random.randint(3, 9) )
