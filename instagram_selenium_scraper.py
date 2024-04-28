@@ -451,7 +451,8 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 					
 					if len(custom_caption_data) >= 900:
 						custom_caption_data = ""
-
+				else:
+					custom_caption_data = ""
 
 				video_items_arr = soup__WebUrl.select('main video')
 
@@ -568,7 +569,7 @@ def printit():
 			# we need to use Try block because Telegram API has 'Max retries exceeded' error from time to time
 			parse_telegram_bot_message()
 		except Exception as error_message:
-			if "Max retries exceeded with url" not in str(error_message) and "api.telegram.org" not in str(error_message):
+			if "Max retries exceeded with url" not in str(error_message) and "api.telegram.org" not in str(error_message) and "ConnectionResetError" not in str(error_message):
 				print(f"Unexpected {error_message=}, {type(error_message)=}")
 				telegram_send_text_func("ERROR! <code>"+ str(error_message) +"</code>")
 		
