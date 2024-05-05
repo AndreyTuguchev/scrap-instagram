@@ -387,32 +387,30 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 
 					button_next_slide_storie = BeautifulSoup( driver.page_source, "lxml" ).select( button_next_slide_css_code )
 
-					if [] != button_next_slide_storie:
-						img_in_storie = BeautifulSoup( driver.page_source, "lxml" ).select( 'body section div > img' )
-						
-						if [] != img_in_storie:
-							telegram_send_single_file_func( img_in_storie[0]["src"], "photo" )
+					img_in_storie = BeautifulSoup( driver.page_source, "lxml" ).select( 'body section div > img' )
+					
+					if [] != img_in_storie:
+						telegram_send_single_file_func( img_in_storie[0]["src"], "photo" )
 
-						video_in_storie = BeautifulSoup( driver.page_source, "lxml" ).select( 'section video' )
-						
-						if [] != video_in_storie:
-							telegram_send_single_file_func( video_in_storie[0]["src"], "video" )
+					video_in_storie = BeautifulSoup( driver.page_source, "lxml" ).select( 'section video' )
+					
+					if [] != video_in_storie:
+						telegram_send_single_file_func( video_in_storie[0]["src"], "video" )
 
-						if [] != BeautifulSoup( driver.page_source, "lxml" ).select( button_next_slide_css_code ):
-							time.sleep(1.5)
-							driver.find_element( By.CSS_SELECTOR, button_next_slide_css_code ).click()
-					else:
+					if [] != BeautifulSoup( driver.page_source, "lxml" ).select( button_next_slide_css_code ):
+						time.sleep(1.5)
+						driver.find_element( By.CSS_SELECTOR, button_next_slide_css_code ).click()
+					
+
+					if [] == button_next_slide_storie:
 						telegram_send_text_func( ".\n\n\n\n\n\n\n\n\n\n\n\n." )
 						break
 
 				counter_variable = counter_variable + 1
 
-
 				# once we checked (watched) all stories for this account we can break out of this loop.
 				if "/stories" not in str(driver.current_url):
 					break
-
-
 
 
 
