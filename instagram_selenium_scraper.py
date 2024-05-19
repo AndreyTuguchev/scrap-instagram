@@ -69,7 +69,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 # ===================================================
 # ===================================================
 
-options.add_argument('--headless=new')
+# options.add_argument('--headless=new')
 options.add_argument("--window-size=1100,970")
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--ignore-certificate-errors')
@@ -114,8 +114,7 @@ def telegram_send_text_func(message_content):
 
 	final_bot_url = 'https://api.telegram.org/bot'+ telegram_api_key +'/sendMessage' +'?chat_id='+ telegram_chat_id
 
-	r = requests.post(final_bot_url, 
-	data=data_values)
+	r = requests.post(final_bot_url, data=data_values, timeout=59)
 	response_data = json.loads(r.text)
 
 # ===================================================
@@ -173,8 +172,7 @@ def telegram_send_single_file_func(file_data, file_type="", caption=""):
 		final_bot_url = 'https://api.telegram.org/bot'+ telegram_api_key +'/'+ tg_method +'?chat_id='+ telegram_chat_id
 		data_values = {file_type: file_data, 'caption': caption, 'supports_streaming': "TRUE", 'timeout': '50000'}
 
-	r = requests.post(final_bot_url, 
-		data=data_values)
+	r = requests.post(final_bot_url, data=data_values, timeout=59)
 
 	response_data = json.loads(r.text)
 	
@@ -204,7 +202,7 @@ def telegram_send_localfile_func( file_data, telegram_chat_id=telegram_chat_id, 
 		'document': open(fPath, 'rb'),
 	}
 
-	r = requests.post(final_bot_url, params=params, files=files )
+	r = requests.post(final_bot_url, params=params, files=files, timeout=59 )
 	response_data = json.loads(r.text)
 
 # ===================================================
@@ -423,11 +421,10 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 
 				if [] != page_content.select("body main"):
 					if "isn't available" in page_content.select("main")[0].text:
-						telegram_send_text_func("This instagram post is not accessible. Make sure that this account is not private and try again.\n\n If this is a private account then you can sign up for our premium plan and download instagram posts from private accounts by request.")
+						telegram_send_text_func("This instagram post is not accessible. Make sure that this account is not private and try again.")
 						break
-
-				if [] != page_content.select("body main"):
-					break
+					else:
+						break
 			
 			soup__WebUrl = BeautifulSoup( driver.page_source, "lxml" )
 			search_item_arr = soup__WebUrl.select('script[type="application/ld+json"]')
@@ -501,7 +498,7 @@ def parse_telegram_bot_message():
 
 	final_bot_url = 'https://api.telegram.org/bot'+ telegram_api_key +'/getUpdates' +'?chat_id='+ telegram_chat_id + "&offset=-1"
 
-	r = requests.post(final_bot_url)
+	r = requests.get(final_bot_url, timeout=59)
 	json_data = json.loads(r.text)
 
 	message_id = json_data["result"][0]["update_id"]
