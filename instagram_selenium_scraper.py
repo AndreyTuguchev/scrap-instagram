@@ -451,55 +451,36 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 			slider_image_css = 'main div > div > div > img[crossorigin="anonymous"]:not([draggable="false"])'
 			slider_video_css = 'main div > div > div > video'
 
+			temp_data_arr = []
 
-			# current instagram post has multiple slides
-			if [] != BeautifulSoup( driver.page_source, 'lxml').select(slider_next_button_css):
+			while BeautifulSoup( driver.page_source, 'lxml').select('body'):
 
-				temp_data_arr = []
+				video_items_arr = BeautifulSoup( driver.page_source, 'lxml').select( slider_video_css )
 
-				while BeautifulSoup( driver.page_source, 'lxml').select('body'):
-
-					video_items_arr = BeautifulSoup( driver.page_source, 'lxml').select( slider_video_css )
-
-					if [] != video_items_arr:
-						for video_item in video_items_arr:
-							if video_item not in temp_data_arr:
-								if None != video_item["src"] or [] != video_item["src"]:
-									telegram_send_single_file_func( video_item["src"], "video", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
-									temp_data_arr.append( video_item )
+				if [] != video_items_arr:
+					for video_item in video_items_arr:
+						if video_item not in temp_data_arr:
+							if None != video_item["src"] or [] != video_item["src"]:
+								telegram_send_single_file_func( video_item["src"], "video", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
+								temp_data_arr.append( video_item )
 
 
-					img_items_arr = BeautifulSoup( driver.page_source, 'lxml').select( slider_image_css )
+				img_items_arr = BeautifulSoup( driver.page_source, 'lxml').select( slider_image_css )
 
-					if [] != img_items_arr:
-						for img_item in img_items_arr:
-							if img_item not in temp_data_arr:
-								if None != img_item["src"] or [] != img_item["src"]:
-									telegram_send_single_file_func( img_item["src"], "photo", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
-									temp_data_arr.append( img_item )
+				if [] != img_items_arr:
+					for img_item in img_items_arr:
+						if img_item not in temp_data_arr:
+							if None != img_item["src"] or [] != img_item["src"]:
+								telegram_send_single_file_func( img_item["src"], "photo", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
+								temp_data_arr.append( img_item )
 
 
-					if [] != BeautifulSoup( driver.page_source, 'lxml').select(slider_next_button_css):
-						driver.find_element( By.CSS_SELECTOR, slider_next_button_css ).click()
-					else:
-						break
-						
-					time.sleep( random.uniform(1, 2.7) )
-
-			else:
-
-				video_items_arr = soup__WebUrl.select('main video')
-
-				for video_item in video_items_arr:
-
-					if None != video_item["src"] or [] != video_item["src"]:
-						telegram_send_single_file_func( video_item["src"], "video", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
-
-				img_items_arr = soup__WebUrl.select('main div > div > div > img[crossorigin="anonymous"]')
-
-				for img_item in img_items_arr:
-					if None != img_item["src"] or [] != img_item["src"]:
-						telegram_send_single_file_func( img_item["src"], "photo", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
+				if [] != BeautifulSoup( driver.page_source, 'lxml').select(slider_next_button_css):
+					driver.find_element( By.CSS_SELECTOR, slider_next_button_css ).click()
+				else:
+					break
+					
+				time.sleep( random.uniform(1, 2.7) )
 
 
 			if len(description) > 0:
