@@ -448,8 +448,8 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 		
 
 			slider_next_button_css = 'main button[aria-label="Next"]'
-			slider_image_css = 'main ul li img[crossorigin="anonymous"]:not([draggable="false"])'
-			slider_video_css = 'main video'
+			slider_image_css = 'main article img[crossorigin="anonymous"]:not([draggable="false"])'
+			slider_video_css = 'main article video'
 
 
 			# current instagram post has multiple slides
