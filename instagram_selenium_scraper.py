@@ -20,6 +20,7 @@ from datetime import date
 from bs4 import BeautifulSoup
 
 import pytz
+import validators
 
 # make sure that we run only one instance of this script at any given time. This is needed because we will have CRON task so we can rerun the script after reboot or manual termination
 from tendo import singleton
@@ -133,7 +134,14 @@ def remove_chrome_singletons():
 	for i in range(0, len(list_of_singleton_files)):
 		# remove the Chrome browser's lock files if browser crashed in the past
 		if os.path.islink(list_of_singleton_files[i]):
-			os.system('sudo rm -f ' + singletonlock_file )
+			execution_result = subprocess.run(
+				"rm -f " + singletonlock_file,
+				shell=False,
+				capture_output=True,
+				text=True,
+				)
+
+			print('execution_result =', execution_result)
 
 remove_chrome_singletons()
 
@@ -239,8 +247,6 @@ def log_current_time():
 # ===================================================
 
 def parse_website( request_string , path_to_file, service=service, options=options):
-
-	request_string = request_string.split('?')[0]
 
 	f = open(padlock_file, "a")
 	f.write(".")		
@@ -547,7 +553,11 @@ def parse_telegram_bot_message():
 								telegram_send_text_func( ".\n\n\n\n\n\n\n\n\n\n\n\n." )
 
 								for single_url in message_text.split(","):
-									if "instagram.com" in single_url:
+
+									if "?" in single_url:
+										single_url = single_url.split('?')[0]
+									
+									if "instagram.com" in single_url and validators.url( single_url ):
 										current_time = datetime.now(timezone)
 										current_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -555,11 +565,15 @@ def parse_telegram_bot_message():
 										parse_website(single_url, path_to_file)
 
 						else:
-							current_time = datetime.now(timezone)
-							current_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+							if "?" in message_text:
+								message_text = message_text.split('?')[0]
+									
+							if validators.url( message_text ):
+								current_time = datetime.now(timezone)
+								current_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
-							if not os.path.isfile(path_to_file):
-								parse_website(message_text, path_to_file)
+								if not os.path.isfile(path_to_file):
+									parse_website(message_text, path_to_file)
 
 
 # ===================================================================================
@@ -586,6 +600,5 @@ def printit():
 		except Exception as error_message:
 			if "Max retries exceeded with url" not in str(error_message) and "api.telegram.org" not in str(error_message) and "ConnectionResetError" not in str(error_message):
 				print(f"Unexpected {error_message=}, {type(error_message)=}")
-				telegram_send_text_func("ERROR! <code>"+ str(error_message) +"</code>")
 		
 printit()
