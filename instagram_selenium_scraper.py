@@ -69,7 +69,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 # ===================================================
 # ===================================================
 
-# options.add_argument('--headless=new')
+options.add_argument('--headless=new')
 options.add_argument("--window-size=1100,970")
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--ignore-certificate-errors')
@@ -427,28 +427,67 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 						break
 			
 			soup__WebUrl = BeautifulSoup( driver.page_source, "lxml" )
-			search_item_arr = soup__WebUrl.select('script[type="application/ld+json"]')
 
-			if search_item_arr == None or search_item_arr == []:
+			instagram_account_name = soup__WebUrl.select('meta[name="twitter:title"]')
+			if [] != instagram_account_name:
+				current_instagram_account = instagram_account_name[0]['content'].split(')')[0].replace("(", "")
+			else:
+				current_instagram_account = 'instagram_account_not_defiend'
 
-				instagram_account_name = soup__WebUrl.select('meta[name="twitter:title"]')
-				if [] != instagram_account_name:
-					current_instagram_account = instagram_account_name[0]['content'].split(')')[0].replace("(", "")
-				else:
-					current_instagram_account = 'instagram_account_not_defiend'
+			description = soup__WebUrl.select('meta[property="og:title"]')
 
-				description = soup__WebUrl.select('meta[property="og:title"]')
+			custom_caption_data = ""
+			if len(description) > 0:
+				description_data = description[0]['content'].replace("on Instagram :", "on Instagram:")
+				if 'on Instagram:' in description_data:
+					description_data = description_data.split('on Instagram:')[1]
+					custom_caption_data = description_data
+				
+				if len(custom_caption_data) >= 900:
+					custom_caption_data = ""
+		
 
-				custom_caption_data = ""
-				if len(description) > 0:
-					description_data = description[0]['content'].replace("on Instagram :", "on Instagram:")
-					if 'on Instagram:' in description_data:
-						description_data = description_data.split('on Instagram:')[1]
-						custom_caption_data = description_data
-					
-					if len(custom_caption_data) >= 900:
-						custom_caption_data = ""
+			slider_next_button_css = 'main button[aria-label="Next"]'
+			slider_image_css = 'main ul li img[crossorigin="anonymous"]:not([draggable="false"])'
+			slider_video_css = 'main video'
+
+
+			# current instagram post has multiple slides
+			if [] != BeautifulSoup( driver.page_source, 'lxml').select(slider_next_button_css):
+
+				temp_data_arr = []
+
+				while BeautifulSoup( driver.page_source, 'lxml').select('body'):
+
+					video_items_arr = BeautifulSoup( driver.page_source, 'lxml').select( slider_video_css )
+
+					if [] != video_items_arr:
+						for video_item in video_items_arr:
+							if video_item not in temp_data_arr:
+								if None != video_item["src"] or [] != video_item["src"]:
+									telegram_send_single_file_func( video_item["src"], "video", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
+									temp_data_arr.append( video_item )
+
+
+					img_items_arr = BeautifulSoup( driver.page_source, 'lxml').select( slider_image_css )
+
+					if [] != img_items_arr:
+						for img_item in img_items_arr:
+							if img_item not in temp_data_arr:
+								if None != img_item["src"] or [] != img_item["src"]:
+									telegram_send_single_file_func( img_item["src"], "photo", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
+									temp_data_arr.append( img_item )
+
+
+					if [] != BeautifulSoup( driver.page_source, 'lxml').select(slider_next_button_css):
+						driver.find_element( By.CSS_SELECTOR, slider_next_button_css ).click()
+					else:
+						break
 						
+					time.sleep( random.uniform(1, 2.7) )
+
+			else:
+
 				video_items_arr = soup__WebUrl.select('main video')
 
 				for video_item in video_items_arr:
@@ -456,16 +495,16 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 					if None != video_item["src"] or [] != video_item["src"]:
 						telegram_send_single_file_func( video_item["src"], "video", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
 
-
 				img_items_arr = soup__WebUrl.select('main div > div > div > img[crossorigin="anonymous"]')
 
 				for img_item in img_items_arr:
 					if None != img_item["src"] or [] != img_item["src"]:
 						telegram_send_single_file_func( img_item["src"], "photo", request_string + "\n\n" + current_instagram_account + "\n\n" + custom_caption_data )
 
-				if len(description) > 0:
-					if len(description_data) >= 900:
-						telegram_send_text_func( description_data + "\n\n" + request_string )
+
+			if len(description) > 0:
+				if len(description_data) >= 900:
+					telegram_send_text_func( description_data + "\n\n" + request_string )
 
 
 	#--------------------------
