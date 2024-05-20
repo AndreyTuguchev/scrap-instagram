@@ -560,6 +560,8 @@ def parse_telegram_bot_message():
 
 									if "?" in single_url:
 										single_url = single_url.split('?')[0]
+
+									single_url = single_url.replace('\n', '').replace('\t', '').replace('\r', '')
 									
 									if "instagram.com" in single_url and validators.url( single_url ):
 										current_time = datetime.now(timezone)
