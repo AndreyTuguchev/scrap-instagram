@@ -528,7 +528,11 @@ def parse_telegram_bot_message():
 	json_data = json.loads(r.text)
 
 	message_id = json_data["result"][0]["update_id"]
-	sender_chat_id = json_data["result"][0]["channel_post"]["sender_chat"]["id"]
+	
+	try:
+		sender_chat_id = json_data["result"][0]["channel_post"]["sender_chat"]["id"]
+	except:
+		sender_chat_id = json_data["result"][0]["edited_channel_post"]["sender_chat"]["id"]
 
 	# make sure that the message wasn't sent by our telegram bot itself
 	if abs(int(sender_chat_id)) == abs(int(telegram_chat_id)):
