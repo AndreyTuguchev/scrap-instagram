@@ -500,7 +500,13 @@ def parse_website( request_string , path_to_file, service=service, options=optio
 	if [] != BeautifulSoup( driver.page_source, "lxml" ).select( username_input_css ):
 		telegram_send_selenium_screenshot( driver )
 		telegram_send_text_func( "⚠️⚠️.\n Login form found! re-login into this Chrome profile \n\n." )
-		
+
+	if 'challenge' in driver.current_url:
+		telegram_send_selenium_screenshot( driver )
+		telegram_send_text_func( "⚠️⚠️.\n Instagram challenge found!!! \n\n." )
+		telegram_listen_father(driver)
+	
+
 	telegram_send_text_func( ".\n\n\n\n\n\n\n\n\n\n\n\n." )
 
 	time.sleep( random.randint(3, 9) )
