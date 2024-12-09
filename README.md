@@ -1,3 +1,16 @@
+<h1>Script usage example within the Telegram channel:</h1>
+<div>
+    Once you send the link this script will read the new message and it will trigger the rest of the code which will open the URL in the Chrome browser with the specified profile and then video or image will be sent back to the Telegram channel
+</div>
+<br/>
+<a href='https://next-event-andrey-tuguchev.vercel.app/' target="_blank" >
+        <img src='config_data/imgs/instagram_saved_reel_example.png' />
+</a><br/><br/><br/>
+
+
+
+==================================
+
 # Python script to scrap data from Instagram and send it into Telegram chat
 
 You need to login to your server via SSH or open the terminal if it's on your local machine.
