@@ -78,7 +78,7 @@ options.add_argument('--no-sandbox')
 options.add_argument("--dns-prefetch-disable")
 options.add_argument("--disable-gpu")
 
-options.add_argument("--profile-directory=Profile 1")  
+options.add_argument("--profile-directory=Profile 3")  
 
 current_os_user = os.getlogin()
 
@@ -216,7 +216,7 @@ def telegram_send_localfile_func( file_data, telegram_chat_id=telegram_chat_id, 
 # ===================================================
 # ===================================================
 
-def telegram_send_selenium_screenshot (driver, type_of_screenshot='error', tg_chan_id_to_send=telegram_chat_id, is_like_btn_pressed=False):
+def telegram_send_selenium_screenshot (driver, type_of_screenshot='error', tg_chat_id_to_send=telegram_chat_id, is_like_btn_pressed=False):
 
 	error_screenshot_path = _CWD_ + "/"+ type_of_screenshot +"_screenshot_path"
 
@@ -231,7 +231,7 @@ def telegram_send_selenium_screenshot (driver, type_of_screenshot='error', tg_ch
 	time.sleep( random.uniform(2, 3) )
 
 	try:
-		telegram_send_localfile_func( screenshot_filename,  tg_chan_id_to_send, "\n.\n" + driver.current_url + "\n")
+		telegram_send_localfile_func( screenshot_filename,  tg_chat_id_to_send, "\n.\n" + driver.current_url + "\n")
 	except Exception as error:
 		telegram_send_text_func("cannot send screenshot... " + str(error_message))
 		
